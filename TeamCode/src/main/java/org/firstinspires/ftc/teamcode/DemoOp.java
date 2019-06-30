@@ -35,19 +35,17 @@ public class DemoOp extends LinearOpMode {
             double rPower = throttle - steering;
             double lPower = throttle + steering;
 
-            if (slowMode == true) {
-                if (steering != 0) {
-                    lPower /= 2.5;
-                    rPower /= 2.5;
-                } else {
-                    lPower /= 2;
-                    rPower /= 2;
-                }
+            if (steering != 0) {
+                lPower /= 2.5;
+                rPower /= 2.5;
+            } else {
+                lPower /= 2;
+                rPower /= 2;
             }
 
             //gamepad 1 (logitech) setPower
-            robot.rearLeft.setPower(lPower/4);
-            robot.rearRight.setPower(rPower/4);
+            robot.left_drive.setPower(lPower/4);
+            robot.right_drive.setPower(rPower/4);
 
             telemetry.addData("Status", "Running");
             telemetry.update();

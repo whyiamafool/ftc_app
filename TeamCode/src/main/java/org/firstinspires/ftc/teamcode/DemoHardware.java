@@ -29,35 +29,25 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //Based on org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot
 
 /**
- * This is NOT an opmode.
- *
- * This class can be used to define all the specific hardware for a single robot.
- * In this case that robot is a Pushbot.
- * See PushbotTeleopTank_Iterative and others classes starting with "Pushbot" for usage examples.
- *
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
  *
  * Motor channel:  Left  drive motor:        "left_drive"
  * Motor channel:  Right drive motor:        "right_drive"
- * Motor channel:  Manipulator drive motor:  "left_arm"
- * Servo channel:  Servo to open left claw:  "left_hand"
- * Servo channel:  Servo to open right claw: "right_hand"
  */
 public class DemoHardware
 {
     /* Public OpMode members. */
-    public DcMotor rearLeft  = null;
-    public DcMotor rearRight  = null;
+    public DcMotor left_drive  = null;
+    public DcMotor right_drive  = null;
 
     //public Servo mineralGate = null;
 
@@ -76,26 +66,22 @@ public class DemoHardware
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        rearLeft  = hwMap.get(DcMotor.class, "left");
-        rearRight = hwMap.get(DcMotor.class, "right");
+        left_drive  = hwMap.get(DcMotor.class, "left");
+        right_drive = hwMap.get(DcMotor.class, "right");
 
-        // Define and Initialize Servos
-        //mineralGate = hwMap.get(Servo.class, "mineralGate");
-
-        rearLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rearRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        left_drive.setDirection(DcMotor.Direction.FORWARD);
+        right_drive.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
-        rearLeft.setPower(0);
-        rearRight.setPower(0);
+        left_drive.setPower(0);
+        right_drive.setPower(0);
 
-        // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
-        rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Set all motors to run without encoders as no encoders are used
+        left_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        right_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        left_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        right_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 }
 

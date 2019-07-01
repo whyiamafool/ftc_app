@@ -37,9 +37,15 @@ public class DemoOp extends LinearOpMode {
 
             if (throttle > 0) {
                 if (steering > 0) {
-                    lPower += steering;
+                    lPower *= steering;
                 } else if (steering < 0) {
-                    rPower += steering;
+                    rPower *= Math.abs(steering);
+                }
+            } else if (throttle < 0) {
+                if (steering > 0) {
+                    rPower *= steering;
+                } else if (steering < 0) {
+                    lPower *= Math.abs(steering);
                 }
             }
 

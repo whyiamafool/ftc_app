@@ -42,5 +42,6 @@ public class MecanumOp extends LinearOpMode {
         telemetry.addData("FrontRightPow",rRightPow);
         telemetry.addData("RearLeftPow",fRightPow);
         telemetry.addData("RearRightPow",rRightPow);
+        telemetry.update();
     }
 }

@@ -62,9 +62,10 @@ public class SummerHardware
     public DcMotor rearRight  = null;
     public DcMotor pivot  = null;
     public DcMotor slide  = null;
+    public DcMotor sLeft  = null;
     public DcMotor intake  = null;
 
-    //public Servo mineralGate = null;
+    public Servo gate = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -87,10 +88,11 @@ public class SummerHardware
         rearRight = hwMap.get(DcMotor.class, "rearRight");
         pivot  = hwMap.get(DcMotor.class, "pivot");
         slide = hwMap.get(DcMotor.class, "slide");
+        sLeft = hwMap.get(DcMotor.class, "sLeft");
         intake = hwMap.get(DcMotor.class, "intake");
 
         // Define and Initialize Servos
-        //mineralGate = hwMap.get(Servo.class, "mineralGate");
+        gate = hwMap.get(Servo.class, "gate");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
@@ -98,6 +100,7 @@ public class SummerHardware
         rearRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         pivot.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         slide.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        sLeft.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         intake.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         // Set all motors to zero power
@@ -107,6 +110,7 @@ public class SummerHardware
         rearRight.setPower(0);
         pivot.setPower(0);
         slide.setPower(0);
+        sLeft.setPower(0);
         intake.setPower(0);
 
         // Set all motors to run without encoders.
@@ -117,6 +121,7 @@ public class SummerHardware
         rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         pivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -125,6 +130,7 @@ public class SummerHardware
         rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         pivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 }

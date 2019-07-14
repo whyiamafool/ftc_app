@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.Locale;
@@ -25,6 +26,8 @@ public class SummerOp extends LinearOpMode {
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
+
+        boolean sorterOpen = false;
 
         while (opModeIsActive()) {
 
@@ -50,6 +53,25 @@ public class SummerOp extends LinearOpMode {
 
             double intake = ((-intakeRight) + (intakeLeft));
 
+            if (gamepad1.x) {
+                intake = 0.4;
+            }
+
+            if (gamepad1.y) {
+                robot.slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.pivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+
+            if (!sorterOpen && robot.slide.getCurrentPosition() >= 2000 && robot.pivot.getCurrentPosition() >= 1650) {
+                sorterOpen = true;
+                robot.gate.setPosition(1); //open
+            } else if (sorterOpen && robot.slide.getCurrentPosition() <= 1700 && robot.pivot.getCurrentPosition() <= 950) {
+                sorterOpen = false;
+                robot.gate.setPosition(0.5); //close
+            }
+
             //gamepad 1 (xbox) setPower
             robot.frontLeft.setPower(lPower/4);
             robot.frontRight.setPower(rPower/4);
@@ -58,6 +80,7 @@ public class SummerOp extends LinearOpMode {
 
             robot.pivot.setPower(pivotMovement/3);
             robot.slide.setPower(slideMovement);
+            robot.sLeft.setPower(-slideMovement);
             robot.intake.setPower(intake);
 
             telemetry.addData("intake", intake);

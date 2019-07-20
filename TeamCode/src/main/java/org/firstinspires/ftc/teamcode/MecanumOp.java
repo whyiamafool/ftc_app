@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import java.util.Arrays;
 
-@TeleOp
+@TeleOp (name = "Mecanum Drive", group = "TeleOp")
 public class MecanumOp extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
 

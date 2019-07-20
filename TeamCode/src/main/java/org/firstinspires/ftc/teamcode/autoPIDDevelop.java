@@ -100,18 +100,6 @@ public class autoPIDDevelop extends LinearOpMode {
             robot.rearLeft.setPower(leftMotorPower);
             robot.rearRight.setPower(rightMotorPower);
 
-            // setting target positions
-            robot.frontLeft.setTargetPosition(leftTarget);
-            robot.frontRight.setTargetPosition(rightTarget);
-            robot.rearLeft.setTargetPosition(leftTarget);
-            robot.rearRight.setTargetPosition(rightTarget);
-
-            // running toward position
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rearLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rearRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
             prevTime = currTime;
         }
     }
@@ -129,6 +117,7 @@ public class autoPIDDevelop extends LinearOpMode {
 
         double totalLeftError = 0;
         double totalRightError = 0;
+        double totalHeadingError = 0;
 
         double prevHeading = angles.firstAngle;
         double headingError = endHeading - prevHeading;
@@ -136,6 +125,8 @@ public class autoPIDDevelop extends LinearOpMode {
         double prevTime = getRuntime();
 
         while (Math.abs(headingError) != 0 || (Math.abs(leftError) != 0 && Math.abs(rightError) != 0)) {
+            double heading = angles.firstAngle;
+
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
 
@@ -145,21 +136,24 @@ public class autoPIDDevelop extends LinearOpMode {
             leftError = leftTarget - currLeftPos;
             rightError = rightTarget - currRightPos;
 
+            headingError = endHeading - heading;
+
             // defining the total errors
             totalLeftError += leftError*deltaTime;
             totalRightError += rightError*deltaTime;
+            totalHeadingError += headingError*deltaTime;
 
             // setting the proportional values
-            double pLeft = -kP * leftError;
-            double pRight = kP * rightError;
+            double pLeft = ((-kP * leftError) + (-kP * headingError)) / 2;
+            double pRight = ((kP * rightError) + (kP * headingError)) / 2;
 
             // setting the integral values
-            double iLeft = -kI * totalLeftError;
-            double iRight = kI * totalRightError;
+            double iLeft = ((-kI * totalLeftError) + (-kI * totalHeadingError)) / 2;
+            double iRight = ((kI * totalRightError) + (kI * totalHeadingError)) / 2;
 
             // setting the derivative values
-            double dLeft = -kD * (leftError/deltaTime);
-            double dRight = kD * (rightError/deltaTime);
+            double dLeft = ((-kD * (leftError/deltaTime)) + (-kD * (headingError/deltaTime))) / 2;
+            double dRight = ((kD * (rightError/deltaTime)) + (kD * (headingError/deltaTime))) / 2;
 
             // setting the motor powers to the sum of p, i, and d
             double leftMotorPower = pLeft + iLeft + dLeft;
@@ -171,24 +165,12 @@ public class autoPIDDevelop extends LinearOpMode {
             robot.rearLeft.setPower(leftMotorPower);
             robot.rearRight.setPower(rightMotorPower);
 
-            // setting target positions
-            robot.frontLeft.setTargetPosition(leftTarget);
-            robot.frontRight.setTargetPosition(rightTarget);
-            robot.rearLeft.setTargetPosition(leftTarget);
-            robot.rearRight.setTargetPosition(rightTarget);
-
-            // running toward position
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rearLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rearRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
             prevTime = currTime;
         }
     }
 
     // allows the robot to move in any direction by strafing or by simply moving forward and backward
     // still a work in progress
-    public void pidMove(double moveValue, double kP, double kI, double kD, float angle) {
+    public void pidMove(double moveInches, double kP, double kI, double kD, float angle) {
     }
 }

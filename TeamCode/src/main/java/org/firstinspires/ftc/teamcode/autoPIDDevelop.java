@@ -1,3 +1,10 @@
+/*
+* A program that contains all autonomous methods to be used
+*
+* @author Pranav Chitiveli
+* @version 20190719
+ */
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -8,7 +15,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous (name = "Autonomous PID Develop", group = "Autos")
@@ -17,7 +23,7 @@ public class autoPIDDevelop extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
     public ElapsedTime runtime = new ElapsedTime();
 
-    Orientation angles;
+    Orientation angles, correctAngles = new Orientation(); // DO NOT use correctAngles unless you have Pranav's permission
 
     BNO055IMU imu;
 
@@ -45,10 +51,16 @@ public class autoPIDDevelop extends LinearOpMode {
         waitForStart();
     }
 
-    // solely for moving forward or backward
-    // base method; will be enhanced later on
+    // for moving forward or backward or for steering turns
+    /**
+    * @param leftEncoder  the value that the left side of the dt needs to move (REQUIRED > 0)
+    * @param rightEncoder the value that the right side of the dt needs to move (REQUIRED > 0)
+    * @param kP           the proportional input of speed to the robot (REQUIRED > 0)
+    * @param kI           the integral input to increasingly decrease offset error
+    * @param kD           the derivative input that increasingly decreases overshoot
+     */
     public void pidDrive(int leftEncoder, int rightEncoder, double kP, double kI, double kD) {
-        // resetting the runtime for accuracy
+        resetMotorEncoders();
         runtime.reset();
 
         // setting target positions
@@ -95,18 +107,24 @@ public class autoPIDDevelop extends LinearOpMode {
             double rightMotorPower = pRight + iRight + dRight;
 
             // setting the motor powers
-            robot.frontLeft.setPower(leftMotorPower);
-            robot.frontRight.setPower(rightMotorPower);
-            robot.rearLeft.setPower(leftMotorPower);
-            robot.rearRight.setPower(rightMotorPower);
+            robot.frontLeft.setPower(clip(leftMotorPower));
+            robot.frontRight.setPower(clip(rightMotorPower));
+            robot.rearLeft.setPower(clip(leftMotorPower));
+            robot.rearRight.setPower(clip(rightMotorPower));
 
             prevTime = currTime;
         }
     }
 
-    // used for tank turns
-    // this is the base method; will be enhanced later on
+    // used solely for tank turns
+    /**
+     * @param turnAmount the number of ticks (reversed on each side of dt) that the robot must turn (REQUIRED > 0)
+     * @param kP         the proportional input of speed to the robot (REQUIRED > 0)
+     * @param kI         the integral input to increasingly decrease offset error
+     * @param kD         the derivative input that increasingly decreases overshoot
+     */
     public void pidTurn(int turnAmount, int kP, int kI, int kD, double endHeading) {
+        resetMotorEncoders();
         runtime.reset();
 
         int leftTarget = turnAmount + ((robot.frontLeft.getCurrentPosition() + robot.rearLeft.getCurrentPosition()) / 2);
@@ -160,10 +178,10 @@ public class autoPIDDevelop extends LinearOpMode {
             double rightMotorPower = pRight + iRight + dRight;
 
             // setting the motor powers
-            robot.frontLeft.setPower(leftMotorPower);
-            robot.frontRight.setPower(rightMotorPower);
-            robot.rearLeft.setPower(leftMotorPower);
-            robot.rearRight.setPower(rightMotorPower);
+            robot.frontLeft.setPower(clip(leftMotorPower));
+            robot.frontRight.setPower(clip(rightMotorPower));
+            robot.rearLeft.setPower(clip(leftMotorPower));
+            robot.rearRight.setPower(clip(rightMotorPower));
 
             prevTime = currTime;
         }
@@ -171,6 +189,48 @@ public class autoPIDDevelop extends LinearOpMode {
 
     // allows the robot to move in any direction by strafing or by simply moving forward and backward
     // still a work in progress
-    public void pidMove(double moveInches, double kP, double kI, double kD, float angle) {
+
+    /**
+     * @param moveTicks    the number of encoder ticks the robot needs to move in a direction
+     * @param kP           proportional input that decreases speed when nearing the target
+     * @param kI           integral input that decreases steady-state error
+     * @param kD           derivative input that decreases probability of overshoot
+     * @param angle        angle the robot needs to move at
+     */
+    public void pidMove(int moveTicks, double kP, double kI, double kD, float angle) {
+        
+    }
+
+    // resets the angle if firstAngle is changed
+    void resetAngle() {
+        angles.firstAngle = correctAngles.firstAngle;
+    }
+
+    /**
+     * @param value a value that will be turned into a percentage
+     * @return
+     */
+    double clip(double value) {
+        return value / 100;
+    }
+
+    /**
+     * @param ticks the number of encoder ticks to be converted into imperial inches
+     * @return
+     */
+    double ticksToInches(double ticks) {
+        double inches = 0; // 0 is placeholder value
+
+        // code that converts encoder ticks to inches
+        // work in progress
+
+        return inches;
+    }
+
+    void resetMotorEncoders() {
+        robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rearLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rearRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

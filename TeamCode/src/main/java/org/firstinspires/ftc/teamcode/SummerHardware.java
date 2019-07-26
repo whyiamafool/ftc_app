@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -56,16 +57,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class SummerHardware
 {
     /* Public OpMode members. */
-    public DcMotor frontLeft   = null;
-    public DcMotor frontRight  = null;
-    public DcMotor rearLeft  = null;
-    public DcMotor rearRight  = null;
-    public DcMotor pivot  = null;
+    public DcMotor fL   = null;
+    public DcMotor fR  = null;
+    public DcMotor rL  = null;
+    public DcMotor rR  = null;
+    /*public DcMotor pivot  = null;
     public DcMotor slide  = null;
     public DcMotor sLeft  = null;
-    public DcMotor intake  = null;
+    public DcMotor intake  = null;*/
 
-    public Servo gate = null;
+    //public Servo gate = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -82,56 +83,36 @@ public class SummerHardware
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        frontLeft  = hwMap.get(DcMotor.class, "frontLeft");
-        frontRight = hwMap.get(DcMotor.class, "frontRight");
-        rearLeft  = hwMap.get(DcMotor.class, "rearLeft");
-        rearRight = hwMap.get(DcMotor.class, "rearRight");
-        pivot  = hwMap.get(DcMotor.class, "pivot");
-        slide = hwMap.get(DcMotor.class, "slide");
-        sLeft = hwMap.get(DcMotor.class, "sLeft");
-        intake = hwMap.get(DcMotor.class, "intake");
+        fL  = hwMap.get(DcMotor.class, "fL");
+        fR = hwMap.get(DcMotor.class, "fR");
+        rL  = hwMap.get(DcMotor.class, "rL");
+        rR = hwMap.get(DcMotor.class, "rR");
 
         // Define and Initialize Servos
-        gate = hwMap.get(Servo.class, "gate");
+        //gate = hwMap.get(Servo.class, "gate");
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        rearLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rearRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        pivot.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        slide.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        sLeft.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        intake.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-
+        fL.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        fR.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        rL.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        rR.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        
         // Set all motors to zero power
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        rearLeft.setPower(0);
-        rearRight.setPower(0);
-        pivot.setPower(0);
-        slide.setPower(0);
-        sLeft.setPower(0);
-        intake.setPower(0);
+        fL.setPower(0);
+        fR.setPower(0);
+        rL.setPower(0);
+        rR.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        pivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        sLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        pivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        sLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 }
 

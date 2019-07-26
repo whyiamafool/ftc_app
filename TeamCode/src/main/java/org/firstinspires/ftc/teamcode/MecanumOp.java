@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -33,10 +34,10 @@ public class MecanumOp extends LinearOpMode {
         }
 
         // set motor powers
-        robot.frontLeft.setPower(fLeftPow);
-        robot.frontRight.setPower(rLeftPow);
-        robot.rearLeft.setPower(fRightPow);
-        robot.rearRight.setPower(rRightPow);
+        robot.fL.setPower(fLeftPow);
+        robot.fR.setPower(rLeftPow);
+        robot.rL.setPower(fRightPow);
+        robot.rR.setPower(rRightPow);
 
         telemetry.addData("FrontLeftPow",fLeftPow);
         telemetry.addData("FrontRightPow",rRightPow);

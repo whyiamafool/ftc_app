@@ -64,8 +64,8 @@ public class autoPIDDevelop extends LinearOpMode {
         runtime.reset();
 
         // setting target positions
-        int leftTarget  = ((robot.frontLeft.getCurrentPosition() + robot.rearLeft.getCurrentPosition()) / 2) + leftEncoder;
-        int rightTarget = ((robot.frontRight.getCurrentPosition() + robot.rearRight.getCurrentPosition()) / 2) + rightEncoder;
+        int leftTarget  = ((robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2) + leftEncoder;
+        int rightTarget = ((robot.fR.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2) + rightEncoder;
 
         // setting errors
         double leftError = leftEncoder;
@@ -80,8 +80,8 @@ public class autoPIDDevelop extends LinearOpMode {
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
 
-            double currLeftPos = (robot.frontLeft.getCurrentPosition() + robot.rearLeft.getCurrentPosition()) / 2;
-            double currRightPos = (robot.frontRight.getCurrentPosition() + robot.rearRight.getCurrentPosition()) / 2;
+            double currLeftPos = (robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2;
+            double currRightPos = (robot.fR.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2;
 
             leftError = leftTarget - currLeftPos;
             rightError = rightTarget - currRightPos;
@@ -107,10 +107,10 @@ public class autoPIDDevelop extends LinearOpMode {
             double rightMotorPower = pRight + iRight + dRight;
 
             // setting the motor powers
-            robot.frontLeft.setPower(clip(leftMotorPower));
-            robot.frontRight.setPower(clip(rightMotorPower));
-            robot.rearLeft.setPower(clip(leftMotorPower));
-            robot.rearRight.setPower(clip(rightMotorPower));
+            robot.fL.setPower(clip(leftMotorPower));
+            robot.fR.setPower(clip(rightMotorPower));
+            robot.rL.setPower(clip(leftMotorPower));
+            robot.rR.setPower(clip(rightMotorPower));
 
             prevTime = currTime;
         }
@@ -127,8 +127,8 @@ public class autoPIDDevelop extends LinearOpMode {
         resetMotorEncoders();
         runtime.reset();
 
-        int leftTarget = turnAmount + ((robot.frontLeft.getCurrentPosition() + robot.rearLeft.getCurrentPosition()) / 2);
-        int rightTarget = turnAmount - ((robot.frontRight.getCurrentPosition() + robot.rearRight.getCurrentPosition()) / 2);
+        int leftTarget = turnAmount + ((robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2);
+        int rightTarget = turnAmount - ((robot.fR.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2);
 
         double leftError = turnAmount;
         double rightError = turnAmount;
@@ -148,8 +148,8 @@ public class autoPIDDevelop extends LinearOpMode {
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
 
-            double currLeftPos = (robot.frontLeft.getCurrentPosition() + robot.rearLeft.getCurrentPosition()) / 2;
-            double currRightPos = (robot.frontRight.getCurrentPosition() + robot.rearRight.getCurrentPosition()) / 2;
+            double currLeftPos = (robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2;
+            double currRightPos = (robot.fR.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2;
 
             leftError = leftTarget - currLeftPos;
             rightError = rightTarget - currRightPos;
@@ -178,10 +178,10 @@ public class autoPIDDevelop extends LinearOpMode {
             double rightMotorPower = pRight + iRight + dRight;
 
             // setting the motor powers
-            robot.frontLeft.setPower(clip(leftMotorPower));
-            robot.frontRight.setPower(clip(rightMotorPower));
-            robot.rearLeft.setPower(clip(leftMotorPower));
-            robot.rearRight.setPower(clip(rightMotorPower));
+            robot.fL.setPower(clip(leftMotorPower));
+            robot.fR.setPower(clip(rightMotorPower));
+            robot.rL.setPower(clip(leftMotorPower));
+            robot.rR.setPower(clip(rightMotorPower));
 
             prevTime = currTime;
         }
@@ -228,9 +228,9 @@ public class autoPIDDevelop extends LinearOpMode {
     }
 
     void resetMotorEncoders() {
-        robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rearLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rearRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.fL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.fR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

@@ -197,9 +197,20 @@ public class autoPIDDevelop extends LinearOpMode {
      * @param kD           derivative input that decreases probability of overshoot
      * @param angle        angle the robot needs to move at
      */
-    public void pidMove(int moveTicks, double kP, double kI, double kD, float angle) {
-        
-    }
+        public void pidMove(int moveTicks, double kP, double kI, double kD, float angle) {
+            runtime.reset();
+            resetMotorEncoders();
+
+            angles.firstAngle = angle;
+
+            int direction;
+            /*
+            * 0 = f
+            * 1 = fR
+            * 2 = l
+            * 3 = rR
+             */
+        }
 
     // resets the angle if firstAngle is changed
     void resetAngle() {

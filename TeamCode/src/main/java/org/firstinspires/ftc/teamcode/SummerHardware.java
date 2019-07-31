@@ -121,5 +121,12 @@ public class SummerHardware
         rL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+
+    public void runUsingEncoder() {
+        fL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
 }
 

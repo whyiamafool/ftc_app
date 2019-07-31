@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 @TeleOp
-public class SDOp extends LinearOpMode {
+public class MencoderOp extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
 
     // The IMU sensor object
@@ -33,6 +33,9 @@ public class SDOp extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+
+        robot.resetMotorEncoders();
+        robot.runUsingEncoder();
 
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
@@ -94,15 +97,15 @@ public class SDOp extends LinearOpMode {
                 BackRightVal /= 2;
             }
 
-            robot.fL.setPower(FrontLeftVal/2);
-            robot.fR.setPower(FrontRightVal/2);
-            robot.rL.setPower(BackLeftVal/2);
-            robot.rR.setPower(BackRightVal/2);
+            robot.fL.setPower(FrontLeftVal/4);
+            robot.fR.setPower(FrontRightVal/4);
+            robot.rL.setPower(BackLeftVal/4);
+            robot.rR.setPower(BackRightVal/4);
 
-            telemetry.addData("FrontLeftPow",FrontLeftVal);
-            telemetry.addData("FrontRightPow",FrontRightVal);
-            telemetry.addData("RearLeftPow",BackLeftVal);
-            telemetry.addData("RearRightPow",BackRightVal);
+            telemetry.addData("FrontLeftPow",robot.fL.getCurrentPosition());
+            telemetry.addData("FrontRightPow",robot.fR.getCurrentPosition());
+            telemetry.addData("RearLeftPow",robot.rL.getCurrentPosition());
+            telemetry.addData("RearRightPow",robot.rR.getCurrentPosition());
             telemetry.update();
         }
     }

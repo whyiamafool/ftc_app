@@ -190,24 +190,26 @@ public class autoPIDDevelop extends LinearOpMode {
     // still a work in progress
 
     /**
-     * @param pMoveTicks number of ticks the positive pair needs to move
-     * @param nMoveTicks number of ticks the negative pair needs to move
-     * @param kP         proportionally decreases speed as it approaches the target
-     * @param kI         decreases steady-state error
-     * @param kD         decreases probability of overshoot
-     * @param angle
+     * @param pMoveTicks      how many ticks the positive part of dt needs to move
+     * @param nMoveTicks      how many ticks the negative part of dt needs to move
+     * @param wheelErrorRange wheel error range that the robot is fine with
+     * @param pkP             proportional value for positive part of dt
+     * @param nkP             proportional value for negative part of dt
+     * @param pkI             integral input for positive part of dt
+     * @param nkI             integral input fot negative part of dt
+     * @param pkD             derivative input for positive part of dt
+     * @param nkD             derivative input for negative part of dt
+     * @param angle           angle robot must move at
+     * @param headingRange    heading error range that the robot is fine with
      */
-    public void pidMove(int pMoveTicks, int nMoveTicks, double wheelErrorRange, double kP, double kI, double kD, float angle, double headingRange) {
+    public void pidMove(int pMoveTicks, int nMoveTicks, double wheelErrorRange, double pkP, double nkP, double pkI, double nkI, double pkD, double nkD, float angle, double headingRange) {
         runtime.reset();
         robot.resetMotorEncoders();
 
         angles.firstAngle = angle;
 
-        int pTar = pMoveTicks;
-        int nTar = nMoveTicks;
-
-        double pError       = pTar;
-        double nError       = nTar;
+        double pError       = pMoveTicks;
+        double nError       = nMoveTicks;
         double headingError = angle - angles.firstAngle;
 
         double totalPosError     = 0;
@@ -217,7 +219,25 @@ public class autoPIDDevelop extends LinearOpMode {
         double prevTime = getRuntime();
 
         while (!(Math.abs(pError) <= wheelErrorRange) && !(Math.abs(nError) <= wheelErrorRange) && !(Math.abs(headingError) <= headingRange)) {
-            
+            double currTime = getRuntime();
+            double deltaTime = currTime - prevTime;
+            prevTime = currTime;
+
+            double pCurrPos = (robot.rL.getCurrentPosition() + robot.fR.getCurrentPosition()) / 2;
+            double nCurrPos = (robot.fL.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2;
+
+            pError = pMoveTicks - pCurrPos;
+            nError = nMoveTicks - nCurrPos;
+            headingError = angle - angles.firstAngle;
+
+            totalPosError += pError*deltaTime;
+            totalNegError += nError*deltaTime;
+            totalHeadingError += headingError*deltaTime;
+
+            double pPos = ((pkP * pError) + (pkP * headingError))/2;
+            double pNeg = ((nkP * nError) + (nkP * headingError))/2;
+
+
         }
     }
 

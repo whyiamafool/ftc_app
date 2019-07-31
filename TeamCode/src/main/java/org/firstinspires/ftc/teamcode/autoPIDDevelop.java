@@ -12,13 +12,12 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous (name = "Autonomous PID Develop", group = "Autos")
-@Disabled
+// @Disabled
 public class autoPIDDevelop extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
     public ElapsedTime runtime = new ElapsedTime();
@@ -60,7 +59,7 @@ public class autoPIDDevelop extends LinearOpMode {
     * @param kD           the derivative input that increasingly decreases overshoot
      */
     public void pidDrive(int leftEncoder, int rightEncoder, double kP, double kI, double kD) {
-        resetMotorEncoders();
+        robot.resetMotorEncoders();
         runtime.reset();
 
         // setting target positions
@@ -124,7 +123,7 @@ public class autoPIDDevelop extends LinearOpMode {
      * @param kD         the derivative input that increasingly decreases overshoot
      */
     public void pidTurn(int turnAmount, int kP, int kI, int kD, double endHeading) {
-        resetMotorEncoders();
+        robot.resetMotorEncoders();
         runtime.reset();
 
         int leftTarget = turnAmount + ((robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2);
@@ -191,26 +190,36 @@ public class autoPIDDevelop extends LinearOpMode {
     // still a work in progress
 
     /**
-     * @param moveTicks    the number of encoder ticks the robot needs to move in a direction
-     * @param kP           proportional input that decreases speed when nearing the target
-     * @param kI           integral input that decreases steady-state error
-     * @param kD           derivative input that decreases probability of overshoot
-     * @param angle        angle the robot needs to move at
+     * @param pMoveTicks number of ticks the positive pair needs to move
+     * @param nMoveTicks number of ticks the negative pair needs to move
+     * @param kP         proportionally decreases speed as it approaches the target
+     * @param kI         decreases steady-state error
+     * @param kD         decreases probability of overshoot
+     * @param angle
      */
-        public void pidMove(int moveTicks, double kP, double kI, double kD, float angle) {
-            runtime.reset();
-            resetMotorEncoders();
+    public void pidMove(int pMoveTicks, int nMoveTicks, double wheelErrorRange, double kP, double kI, double kD, float angle, double headingRange) {
+        runtime.reset();
+        robot.resetMotorEncoders();
 
-            angles.firstAngle = angle;
+        angles.firstAngle = angle;
 
-            int direction;
-            /*
-            * 0 = f
-            * 1 = fR
-            * 2 = l
-            * 3 = rR
-             */
+        int pTar = pMoveTicks;
+        int nTar = nMoveTicks;
+
+        double pError       = pTar;
+        double nError       = nTar;
+        double headingError = angle - angles.firstAngle;
+
+        double totalPosError     = 0;
+        double totalNegError     = 0;
+        double totalHeadingError = 0;
+
+        double prevTime = getRuntime();
+
+        while (!(Math.abs(pError) <= wheelErrorRange) && !(Math.abs(nError) <= wheelErrorRange) && !(Math.abs(headingError) <= headingRange)) {
+            
         }
+    }
 
     // resets the angle if firstAngle is changed
     void resetAngle() {
@@ -236,12 +245,5 @@ public class autoPIDDevelop extends LinearOpMode {
         // work in progress
 
         return inches;
-    }
-
-    void resetMotorEncoders() {
-        robot.fL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.fR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

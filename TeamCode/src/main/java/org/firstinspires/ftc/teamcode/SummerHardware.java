@@ -114,5 +114,12 @@ public class SummerHardware
         rL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
+    public void resetMotorEncoders() {
+        fL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
 }
 

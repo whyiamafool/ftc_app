@@ -91,11 +91,11 @@ public class SummerHardware
         // Define and Initialize Servos
         //gate = hwMap.get(Servo.class, "gate");
 
-        fL.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        fR.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        rL.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rR.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        
+        fL.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        fR.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        rL.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rR.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+
         // Set all motors to zero power
         fL.setPower(0);
         fR.setPower(0);

@@ -1,8 +1,8 @@
 /*
-* A program that contains all autonomous methods to be used
-*
-* @author Pranav Chitiveli
-* @version 20190719
+ * A program that contains all autonomous methods to be used
+ *
+ * @author Pranav Chitiveli
+ * @version 20190719
  */
 
 package org.firstinspires.ftc.teamcode;
@@ -16,50 +16,51 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous (name = "Autonomous PID Develop", group = "Autos")
+@Autonomous (name = "autoPIDDevelop", group = "autoTesting")
 // @Disabled
 public class autoPIDDevelop extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
-    public ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
-    Orientation angles, correctAngles = new Orientation(); // DO NOT use correctAngles unless you have Pranav's permission
+    Orientation angles, correctAngles; // DO NOT use correctAngles unless you have Pranav's permission
 
     BNO055IMU imu;
 
     @Override
     public void runOpMode() {
-        BNO055IMU.Parameters parameters             = new BNO055IMU.Parameters();
-        parameters.angleUnit                        = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit                        = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile              = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled                   = true;
-        parameters.loggingTag                       = "IMU";
+        robot.init(hardwareMap);
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        imu = hardwareMap.get(BNO055IMU.class,"imu");
-        imu.initialize(parameters);
-
-        while (!imu.isGyroCalibrated()) {
-            idle();
-        }
-
-        telemetry.addData("IMU calibraation status", imu.getCalibrationStatus().toString());
         telemetry.addData("Status","Initialized");
         telemetry.update();
 
         waitForStart();
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        pidDrive(1200,1200,0.01,0.003,0,2.5);
+        //pidMove(1200,-1200,0.5,0.5,0,0,0,0,90);
     }
 
     // for moving forward or backward or for steering turns
     /**
-    * @param leftEncoder  the value that the left side of the dt needs to move (REQUIRED > 0)
-    * @param rightEncoder the value that the right side of the dt needs to move (REQUIRED > 0)
-    * @param kP           the proportional input of speed to the robot (REQUIRED > 0)
-    * @param kI           the integral input to increasingly decrease offset error
-    * @param kD           the derivative input that increasingly decreases overshoot
+     * @param leftEncoder  the value that the left side of the dt needs to move (REQUIRED > 0)
+     * @param rightEncoder the value that the right side of the dt needs to move (REQUIRED > 0)
+     * @param kP           the proportional input of speed to the robot (REQUIRED > 0)
+     * @param kI           the integral input to increasingly decrease offset error
+     * @param kD           the derivative input that increasingly decreases overshoot
      */
-    public void pidDrive(int leftEncoder, int rightEncoder, double kP, double kI, double kD) {
+    public void pidDrive(int leftEncoder, int rightEncoder, double kP, double kI, double kD, double acceptRange) {
         robot.resetMotorEncoders();
+        robot.runUsingEncoder();
         runtime.reset();
 
         // setting target positions
@@ -75,7 +76,7 @@ public class autoPIDDevelop extends LinearOpMode {
 
         // setting prevTime to time before loop
         double prevTime = getRuntime();
-        while (Math.abs(leftError) != 0 && Math.abs(rightError) != 0) { // not at target yet
+        while ((Math.abs(leftError) != 0 && Math.abs(rightError) != 0) && opModeIsActive()) { // not at target yet
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
 
@@ -113,6 +114,10 @@ public class autoPIDDevelop extends LinearOpMode {
 
             prevTime = currTime;
         }
+        telemetry.addData("fL currPos",robot.fL.getCurrentPosition());
+        telemetry.addData("fR currPos",robot.fR.getCurrentPosition());
+        telemetry.update();
+        sleep(2500);
     }
 
     // used solely for tank turns
@@ -124,6 +129,7 @@ public class autoPIDDevelop extends LinearOpMode {
      */
     public void pidTurn(int turnAmount, int kP, int kI, int kD, double endHeading) {
         robot.resetMotorEncoders();
+        robot.runUsingEncoder();
         runtime.reset();
 
         int leftTarget = turnAmount + ((robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2);
@@ -192,7 +198,6 @@ public class autoPIDDevelop extends LinearOpMode {
     /**
      * @param pMoveTicks      how many ticks the positive part of dt needs to move
      * @param nMoveTicks      how many ticks the negative part of dt needs to move
-     * @param wheelErrorRange wheel error range that the robot is fine with
      * @param pkP             proportional value for positive part of dt
      * @param nkP             proportional value for negative part of dt
      * @param pkI             integral input for positive part of dt
@@ -200,11 +205,11 @@ public class autoPIDDevelop extends LinearOpMode {
      * @param pkD             derivative input for positive part of dt
      * @param nkD             derivative input for negative part of dt
      * @param angle           angle robot must move at
-     * @param headingRange    heading error range that the robot is fine with
      */
-    public void pidMove(int pMoveTicks, int nMoveTicks, double wheelErrorRange, double pkP, double nkP, double pkI, double nkI, double pkD, double nkD, float angle, double headingRange) {
+    public void pidMove(int pMoveTicks, int nMoveTicks, double pkP, double nkP, double pkI, double nkI, double pkD, double nkD, float angle) {
         runtime.reset();
         robot.resetMotorEncoders();
+        robot.runUsingEncoder();
 
         angles.firstAngle = angle;
 
@@ -218,7 +223,10 @@ public class autoPIDDevelop extends LinearOpMode {
 
         double prevTime = getRuntime();
 
-        while (!(Math.abs(pError) <= wheelErrorRange) && !(Math.abs(nError) <= wheelErrorRange) && !(Math.abs(headingError) <= headingRange)) {
+        double pMotorPower = 0;
+        double nMotorPower = 0;
+
+        while ((!(Math.abs(pError) != 0) && !(Math.abs(nError) != 0) && !(Math.abs(headingError) != 0)) && opModeIsActive()) {
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
             prevTime = currTime;
@@ -243,8 +251,8 @@ public class autoPIDDevelop extends LinearOpMode {
             double dPos = ((pkD * (pError/deltaTime)) + (pkD * (headingError/deltaTime)))/2;
             double dNeg = ((nkD * (nError/deltaTime)) + (nkD * (headingError/deltaTime)))/2;
 
-            double pMotorPower = pPos + iPos + dPos;
-            double nMotorPower = pNeg + iNeg + dNeg;
+            pMotorPower = pPos + iPos + dPos;
+            nMotorPower = pNeg + iNeg + dNeg;
 
             robot.fL.setPower(clip(nMotorPower));
             robot.fR.setPower(clip(pMotorPower));

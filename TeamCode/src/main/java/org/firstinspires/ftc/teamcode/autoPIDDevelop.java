@@ -237,8 +237,29 @@ public class autoPIDDevelop extends LinearOpMode {
             double pPos = ((pkP * pError) + (pkP * headingError))/2;
             double pNeg = ((nkP * nError) + (nkP * headingError))/2;
 
+            double iPos = ((pkI * totalPosError) + (pkI * totalHeadingError))/2;
+            double iNeg = ((nkI * totalNegError) + (nkI * totalHeadingError))/2;
 
+            double dPos = ((pkD * (pError/deltaTime)) + (pkD * (headingError/deltaTime)))/2;
+            double dNeg = ((nkD * (nError/deltaTime)) + (nkD * (headingError/deltaTime)))/2;
+
+            double pMotorPower = pPos + iPos + dPos;
+            double nMotorPower = pNeg + iNeg + dNeg;
+
+            robot.fL.setPower(clip(nMotorPower));
+            robot.fR.setPower(clip(pMotorPower));
+            robot.rL.setPower(clip(pMotorPower));
+            robot.rR.setPower(clip(nMotorPower));
+
+            telemetry.addData("Current Pos Position", pCurrPos);
+            telemetry.addData("Current Neg Position", nCurrPos);
+            telemetry.addData("Pos Power",pMotorPower);
+            telemetry.addData("Neg Power",nMotorPower);
+            telemetry.update();
         }
+        telemetry.addData("Path","Complete");
+        telemetry.update();
+        resetAngle();
     }
 
     // resets the angle if firstAngle is changed

@@ -22,7 +22,7 @@ public class autoPIDDevelop extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
     private ElapsedTime runtime = new ElapsedTime();
 
-    Orientation angles, correctAngles; // DO NOT use correctAngles unless you have Pranav's permission
+    Orientation angles;
 
     BNO055IMU imu;
 
@@ -46,11 +46,12 @@ public class autoPIDDevelop extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        pidDrive(1200,1200,0.01,0.003,0,2.5);
+        //pidTank(1200,1200,0.01,0.003,0,2.5,45,2.5);
         //pidMove(1200,-1200,0.5,0.5,0,0,0,0,90);
     }
 
-    // for moving forward or backward or for steering turns
+    // forward, backward, steering turn, tank turn
+    // forward and backward will be covered by pidMove
     /**
      * @param leftEncoder  the value that the left side of the dt needs to move (REQUIRED > 0)
      * @param rightEncoder the value that the right side of the dt needs to move (REQUIRED > 0)
@@ -58,49 +59,50 @@ public class autoPIDDevelop extends LinearOpMode {
      * @param kI           the integral input to increasingly decrease offset error
      * @param kD           the derivative input that increasingly decreases overshoot
      */
-    public void pidDrive(int leftEncoder, int rightEncoder, double kP, double kI, double kD, double acceptRange) {
+    public void pidTank(int leftEncoder, int rightEncoder, double kP, double kI, double kD, double acceptRange, float endHeading, double headingRange) {
         robot.resetMotorEncoders();
         robot.runUsingEncoder();
         runtime.reset();
 
-        // setting target positions
-        int leftTarget  = ((robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2) + leftEncoder;
-        int rightTarget = ((robot.fR.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2) + rightEncoder;
-
         // setting errors
         double leftError = leftEncoder;
         double rightError = rightEncoder;
+        double headingError = endHeading - angles.firstAngle;
 
         double totalLeftError = 0;
         double totalRightError = 0;
+        double totalHeadingError = 0;
 
         // setting prevTime to time before loop
         double prevTime = getRuntime();
-        while ((Math.abs(leftError) != 0 && Math.abs(rightError) != 0) && opModeIsActive()) { // not at target yet
+        while ((!(Math.abs(leftError) <= acceptRange) && !(Math.abs(rightError) <= acceptRange) && !(Math.abs(headingError) <= headingRange)) && opModeIsActive()) { // not at target yet
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
 
             double currLeftPos = (robot.fL.getCurrentPosition() + robot.rL.getCurrentPosition()) / 2;
             double currRightPos = (robot.fR.getCurrentPosition() + robot.rR.getCurrentPosition()) / 2;
 
-            leftError = leftTarget - currLeftPos;
-            rightError = rightTarget - currRightPos;
+            leftError = leftEncoder - currLeftPos;
+            rightError = rightEncoder - currRightPos;
+            headingError = endHeading - angles.firstAngle;
+
 
             // defining the total errors
             totalLeftError += leftError*deltaTime;
             totalRightError += rightError*deltaTime;
+            totalHeadingError += headingError*deltaTime;
 
             // setting the proportional values
-            double pLeft = kP * leftError;
-            double pRight = kP * rightError;
+            double pLeft = ((kP * leftError) + (kP * headingError))/2;
+            double pRight = ((kP * rightError) + (kP * headingError))/2;
 
             // setting the integral values
-            double iLeft = kI * totalLeftError;
-            double iRight = kI * totalRightError;
+            double iLeft = ((kI * totalLeftError) + (kI * totalHeadingError))/2;
+            double iRight = ((kI * totalRightError) + (kI * totalHeadingError))/2;
 
             // setting the derivative values
-            double dLeft = kD * (leftError/deltaTime);
-            double dRight = kD * (rightError/deltaTime);
+            double dLeft = ((kD * (leftError/deltaTime)) + (kD * (headingError/deltaTime)))/2;
+            double dRight = ((kD * (rightError/deltaTime)) + (kD * (headingError/deltaTime)))/2;
 
             // setting the motor powers to the sum of p, i, and d
             double leftMotorPower = pLeft + iLeft + dLeft;
@@ -206,16 +208,17 @@ public class autoPIDDevelop extends LinearOpMode {
      * @param nkD             derivative input for negative part of dt
      * @param angle           angle robot must move at
      */
-    public void pidMove(int pMoveTicks, int nMoveTicks, double pkP, double nkP, double pkI, double nkI, double pkD, double nkD, float angle) {
+    public void pidMove(int pMoveTicks, int nMoveTicks, double wheelRange, double pkP, double nkP, double pkI, double nkI, double pkD, double nkD, double angle) {
         runtime.reset();
         robot.resetMotorEncoders();
         robot.runUsingEncoder();
 
-        angles.firstAngle = angle;
+        double simulatedAngle = angles.firstAngle + angle;
+        double targetAngle = angles.firstAngle + angle;
 
         double pError       = pMoveTicks;
         double nError       = nMoveTicks;
-        double headingError = angle - angles.firstAngle;
+        double headingError = targetAngle - simulatedAngle;
 
         double totalPosError     = 0;
         double totalNegError     = 0;
@@ -226,9 +229,10 @@ public class autoPIDDevelop extends LinearOpMode {
         double pMotorPower = 0;
         double nMotorPower = 0;
 
-        while ((!(Math.abs(pError) != 0) && !(Math.abs(nError) != 0) && !(Math.abs(headingError) != 0)) && opModeIsActive()) {
+        while ((!(Math.abs(pError) <= wheelRange) && !(Math.abs(nError) <= wheelRange) && !(Math.abs(headingError) != 0)) && opModeIsActive()) {
             double currTime = getRuntime();
             double deltaTime = currTime - prevTime;
+            simulatedAngle = angles.firstAngle + angle;
             prevTime = currTime;
 
             double pCurrPos = (robot.rL.getCurrentPosition() + robot.fR.getCurrentPosition()) / 2;
@@ -236,7 +240,7 @@ public class autoPIDDevelop extends LinearOpMode {
 
             pError = pMoveTicks - pCurrPos;
             nError = nMoveTicks - nCurrPos;
-            headingError = angle - angles.firstAngle;
+            headingError = targetAngle - simulatedAngle;
 
             totalPosError += pError*deltaTime;
             totalNegError += nError*deltaTime;
@@ -265,14 +269,11 @@ public class autoPIDDevelop extends LinearOpMode {
             telemetry.addData("Neg Power",nMotorPower);
             telemetry.update();
         }
+        telemetry.addData("fL currPos", robot.fL.getCurrentPosition());
+        telemetry.addData("fR currPos", robot.fR.getCurrentPosition());
         telemetry.addData("Path","Complete");
         telemetry.update();
-        resetAngle();
-    }
-
-    // resets the angle if firstAngle is changed
-    void resetAngle() {
-        angles.firstAngle = correctAngles.firstAngle;
+        sleep(2500);
     }
 
     /**
@@ -281,18 +282,5 @@ public class autoPIDDevelop extends LinearOpMode {
      */
     double clip(double value) {
         return value / 100;
-    }
-
-    /**
-     * @param ticks the number of encoder ticks to be converted into imperial inches
-     * @return
-     */
-    double ticksToInches(double ticks) {
-        double inches = 0; // 0 is placeholder value
-
-        // code that converts encoder ticks to inches
-        // work in progress
-
-        return inches;
     }
 }

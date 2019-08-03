@@ -16,9 +16,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous (name = "autoPIDDevelop", group = "autoTesting")
+@Autonomous (name = "autoPID", group = "autoMethods")
 // @Disabled
-public class autoPIDDevelop extends LinearOpMode {
+public class autoPID extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
     private ElapsedTime runtime = new ElapsedTime();
 

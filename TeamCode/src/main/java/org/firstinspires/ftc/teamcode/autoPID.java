@@ -16,9 +16,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous (name = "autoPIDDevelop", group = "autoTesting")
+@Autonomous (name = "autoPID", group = "autoMethods")
 // @Disabled
-public class autoPIDDevelop extends LinearOpMode {
+public class autoPID extends LinearOpMode {
     SummerHardware robot = new SummerHardware();
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -123,13 +123,7 @@ public class autoPIDDevelop extends LinearOpMode {
     }
 
     // used solely for tank turns
-    /**
-     * @param turnAmount the number of ticks (reversed on each side of dt) that the robot must turn (REQUIRED > 0)
-     * @param kP         the proportional input of speed to the robot (REQUIRED > 0)
-     * @param kI         the integral input to increasingly decrease offset error
-     * @param kD         the derivative input that increasingly decreases overshoot
-     */
-    public void pidTurn(int turnAmount, int kP, int kI, int kD, double endHeading) {
+    /*public void pidTurn(int turnAmount, int kP, int kI, int kD, double endHeading) {
         robot.resetMotorEncoders();
         robot.runUsingEncoder();
         runtime.reset();
@@ -192,7 +186,7 @@ public class autoPIDDevelop extends LinearOpMode {
 
             prevTime = currTime;
         }
-    }
+    }*/
 
     // allows the robot to move in any direction by strafing or by simply moving forward and backward
     // still a work in progress
